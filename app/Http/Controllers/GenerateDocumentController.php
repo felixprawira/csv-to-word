@@ -48,7 +48,7 @@ class GenerateDocumentController extends Controller
                     'wrappingStyle' => 'infront',
                 )
             );		
-            $header->addText($csv_value[1]." ".$csv_value[2], array(), array('align' => 'right'));
+            $header->addText(htmlspecialchars($csv_value[1])." ".htmlspecialchars($csv_value[2]), array(), array('align' => 'right'));
             
             $topLineStyle = array('weight' => 1, 'width' => 760, 'height' => 0);
             $section->addLine($topLineStyle);
@@ -63,22 +63,18 @@ class GenerateDocumentController extends Controller
             $table = $section->addTable($dhTableStyleName);
 
             $table->addRow(300);
-            $table->addCell(6000, $dhTableCellStyle)->addText('Product Name: '.$csv_value[4], $dhTableFontStyle);
-            $table->addCell(4000, $dhTableCellStyle)->addText('Product No.: '.$csv_value[5], $dhTableFontStyle);
-            $section->addTextBreak();
+            $table->addCell(6000, $dhTableCellStyle)->addText('Product Name: '.htmlspecialchars($csv_value[4]), $dhTableFontStyle);
+            $table->addCell(4000, $dhTableCellStyle)->addText('Product No.: '.htmlspecialchars($csv_value[5]), $dhTableFontStyle);
 
             $section->addText('1. SELECTION OF RISK MANAGEMENT STANDARD', array('bold' => true));
             $section->addText('The following standard is applicable to the Risk Management Plan of Axil Scientific Pte. Ltd.: ');
-            $section->addText($csv_value[6]);
-            $section->addTextBreak();
+            $section->addText(htmlspecialchars($csv_value[6]));
 
             $section->addText('2. PURPOSE', array('bold' => true));
-            $section->addText($csv_value[7], null, array('align' => 'both'));
-            $section->addTextBreak();
+            $section->addText(htmlspecialchars($csv_value[7]), null, array('align' => 'both'));
 
             $section->addText('3. RISK MANAGEMENT ACTIVITIES', array('bold' => true));
-            $section->addText($csv_value[8], null, array('align' => 'both'));
-            $section->addTextBreak();
+            $section->addText(htmlspecialchars($csv_value[8]), null, array('align' => 'both'));
 
             $section->addText('SIGNATORY APPROVAL', array('bold' => true));
 
@@ -100,15 +96,15 @@ class GenerateDocumentController extends Controller
 
             $table->addRow(300);
             $table->addCell(1830, $signatureTableCellStyle)->addText('Prepared by:');
-            $table->addCell(1830, $signatureTableCellStyle)->addText($csv_value[9]);
-            $table->addCell(1830, $signatureTableCellStyle)->addText($csv_value[10]);
+            $table->addCell(1830, $signatureTableCellStyle)->addText(htmlspecialchars($csv_value[9]));
+            $table->addCell(1830, $signatureTableCellStyle)->addText(htmlspecialchars($csv_value[10]));
             $table->addCell(1830, $signatureTableCellStyle)->addText('');
             $table->addCell(1830, $signatureTableCellStyle)->addText('');
 
             $table->addRow(300);
             $table->addCell(1830, $signatureTableCellStyle)->addText('Approved by:');
-            $table->addCell(1830, $signatureTableCellStyle)->addText($csv_value[11]);
-            $table->addCell(1830, $signatureTableCellStyle)->addText($csv_value[12]);
+            $table->addCell(1830, $signatureTableCellStyle)->addText(htmlspecialchars($csv_value[11]));
+            $table->addCell(1830, $signatureTableCellStyle)->addText(htmlspecialchars($csv_value[12]));
             $table->addCell(1830, $signatureTableCellStyle)->addText('');
             $table->addCell(1830, $signatureTableCellStyle)->addText('');
 
@@ -116,10 +112,10 @@ class GenerateDocumentController extends Controller
             $lineStyle = array('weight' => 1, 'width' => 760, 'height' => 0);
             $footer->addLine($lineStyle);
             $footer->addPreserveText('Page {PAGE} of {NUMPAGES}.', null, array('align' => 'right'));
-            $footer->addText($csv_value[3], null, array('align' => 'right'));
+            $footer->addText(htmlspecialchars($csv_value[3]), null, array('align' => 'right'));
 
 			$objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-            $file = $csv_value[0].'.docx';
+            $file = htmlspecialchars($csv_value[0]).'.docx';
             header("Content-Description: File Transfer");
             header('Content-Disposition: attachment; filename="' . $file . '"');
             header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
