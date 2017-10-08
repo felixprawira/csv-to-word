@@ -17,5 +17,9 @@
         "laravel-mix": "^1.0",
         "lodash": "^4.17.4",
         "vue": "^2.1.10"
+    },
+    "dependencies": {
+        "docxtemplater": "^3.1.9",
+        "jszip": "^3.1.4"
     }
 }

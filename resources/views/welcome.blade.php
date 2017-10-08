@@ -63,6 +63,89 @@
                 margin-bottom: 30px;
             }
         </style>
+        <script src="js/jquery-3.2.1.min.js"></script>
+        <script src="js/docxtemplater.js"></script>
+        <script src="js/docxtemplater-image-module.js"></script>
+        <script src="js/jszip.js"></script>
+        <script src="js/file-saver.min.js"></script>
+        <script src="js/jszip-utils.js"></script>
+        <script type="text/javascript">
+            $(function() {
+                $(".generateDocument").click(function() {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{route('generateDocument')}}",
+                        success: function(response) {
+                            var width = response[14];
+                            var height = response[15];
+                            loadFile(response[13], function (error, content) {
+                                var myimg = content;
+                                
+                                var opts = {};
+                                opts.centered = false;
+                                opts.getImage = function (tagValue, tagName) {
+                                  return myimg;
+                                };
+
+                                opts.getSize = function (img, tagValue, tagName) {
+                                  return [width/(height/60), 60];
+                                };
+                                var imageModule = new window.ImageModule(opts);
+
+                                loadFile("template.docx",function(error,content){
+                                    if (error) { throw error };
+                                    
+                                    var zip = new JSZip(content);
+                                    var doc = new Docxtemplater().loadZip(zip);
+                                    doc.attachModule(imageModule);
+                                    doc.setData({
+                                        document_number: response[1],
+                                        document_title: response[2],
+                                        logo: response[13],
+                                        product_name: response[4],
+                                        product_no: response[5],
+                                        risk_mgmt_standard: response[6],
+                                        document_purpose: response[7],
+                                        risk_mgmt_activities: response[8],
+                                        prepared_by: response[9],
+                                        approved_by: response[11],
+                                        designation_preparer: response[10],
+                                        designation_approver: response[12],
+                                        version: response[3]
+                                    });
+
+                                    try {
+                                        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                                        doc.render();
+                                    }
+                                    catch (error) {
+                                        var e = {
+                                            message: error.message,
+                                            name: error.name,
+                                            stack: error.stack,
+                                            properties: error.properties,
+                                        };
+                                        console.log(JSON.stringify({error: e}));
+                                        // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                                        throw error;
+                                    }
+
+                                    var out=doc.getZip().generate({
+                                        type:"blob"
+                                    }); //Output the document using Data-URI
+                                    saveAs(out,response[0] + ".docx");
+                                });
+                            });
+                        }
+                    });
+                    
+                    function loadFile(url, callback)
+                    {
+                        JSZipUtils.getBinaryContent(url, callback);
+                    }
+                });
+            });
+        </script>
     </head>
     <body>
         <div class="flex-center position-ref full-height">
@@ -83,7 +166,7 @@
                 </div>
 
                 <div class="links">
-                    <a href="{{ route('generateDocument') }}">Generate Document</a>
+                    <a href="#" class="generateDocument">Generate Document</a>
                     <a href="https://laravel.com/docs">Documentation</a>
                     <a href="https://laracasts.com">Laracasts</a>
                     <a href="https://laravel-news.com">News</a>
